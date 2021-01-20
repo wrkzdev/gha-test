@@ -1,0 +1,30 @@
+name: Build
+on:
+  push:
+  pull_request:
+  
+env:
+  TAG: ${{ github.ref }}
+
+jobs:
+  test:
+    name: Run tests
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@master
+
+      # Upload to S3
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8 # Or other version
+
+    - name: Install awscli via pipx # Isolates dependencies
+      id: install-s3
+      shell: bash
+      run: |
+        export PATH=~/.local/bin:$PATH
+        pip install --user pipx
+        pipx install awscli
+        pip install --user pipx awscli-plugin-endpoint
+        which aws
